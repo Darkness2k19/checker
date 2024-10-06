@@ -43,10 +43,23 @@ def load_modules(
 
         sys.modules[module_info.name] = module
         assert spec.loader is not None
-        specs.append((spec.loader, module))
+        specs.append((module_info.name, spec.loader, module))
 
-    for loader, module in specs:
-        loader.exec_module(module)
+    last_module: str | None = None
+    while len(specs) > 0:
+        module_name, loader, module = specs.pop(0)
+        try:
+            loader.exec_module(module)
+        except ImportError as e:
+            if not last_module:
+                last_module = module_name
+            elif last_module == module_name:
+                raise e
+            
+            specs.append((module_name, loader, module))
+        else:
+            last_module = None
+
 
 
 def load_plugins(
