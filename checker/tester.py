@@ -69,7 +69,7 @@ class Tester:
         self.default_params = checker_config.default_parameters
 
         if self.structure_config.private_resources_dir:
-            load_modules([self.structure_config.private_resources_dir])
+            load_modules([f"{tmp_dir}/{self.structure_config.private_resources_dir}"])
         self.plugins = load_plugins(
             [f"{tmp_dir}/tools/plugins"] + self.testing_config.search_plugins, 
             verbose=verbose
