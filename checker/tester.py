@@ -9,7 +9,7 @@ from .configs.checker import CheckerConfig, CheckerParametersConfig
 from .course import Course, FileSystemTask
 from .exceptions import TestingError
 from .pipeline import PipelineResult, PipelineRunner, PipelineStageResult
-from .plugins import load_plugins
+from .plugins import load_modules, load_plugins
 from .utils import print_header_info, print_info, print_separator
 
 
@@ -68,7 +68,12 @@ class Tester:
         self.structure_config = checker_config.structure
         self.default_params = checker_config.default_parameters
 
-        self.plugins = load_plugins([f"{tmp_dir}/tools/plugins"] + self.testing_config.search_plugins, verbose=verbose)
+        if self.structure_config.private_resources_dir:
+            load_modules([self.structure_config.private_resources_dir])
+        self.plugins = load_plugins(
+            [f"{tmp_dir}/tools/plugins"] + self.testing_config.search_plugins, 
+            verbose=verbose
+        )
 
         self.global_pipeline = PipelineRunner(self.testing_config.global_pipeline, self.plugins, verbose=verbose)
         self.task_pipeline = PipelineRunner(self.testing_config.tasks_pipeline, self.plugins, verbose=verbose)

@@ -23,6 +23,32 @@ def get_all_subclasses(cls: type[PluginABC]) -> set[type[PluginABC]]:
     return set(cls.__subclasses__()).union([s for c in cls.__subclasses__() for s in get_all_subclasses(c)])
 
 
+def load_modules(
+    search_directories: Sequence[str | Path],
+    *,
+    verbose: bool = False,
+):
+    specs = []
+    for module_info in pkgutil.iter_modules([str(path) for path in search_directories]):
+        if module_info.name == "__init__":
+            continue
+        if verbose:
+            print_info(f"- {module_info.name} from {module_info.module_finder.path}")  # type: ignore[union-attr]
+
+        spec = module_info.module_finder.find_spec(fullname=module_info.name)  # type: ignore[call-arg]
+        if spec is None:
+            raise ImportError(f"Could not find {module_info.name}")
+        module = importlib.util.module_from_spec(spec)
+        module.__package__ = __package__  # TODO: check for external plugins
+
+        sys.modules[module_info.name] = module
+        assert spec.loader is not None
+        specs.append((spec.loader, module))
+
+    for loader, module in specs:
+        loader.exec_module(module)
+
+
 def load_plugins(
     search_directories: Sequence[str | Path] | None = None,
     *,
@@ -41,21 +67,7 @@ def load_plugins(
 
     # force load plugins
     print_info("Loading plugins...")
-    for module_info in pkgutil.iter_modules([str(path) for path in search_directories]):
-        if module_info.name == "__init__":
-            continue
-        if verbose:
-            print_info(f"- {module_info.name} from {module_info.module_finder.path}")  # type: ignore[union-attr]
-
-        spec = module_info.module_finder.find_spec(fullname=module_info.name)  # type: ignore[call-arg]
-        if spec is None:
-            raise ImportError(f"Could not find {module_info.name}")
-        module = importlib.util.module_from_spec(spec)
-        module.__package__ = __package__  # TODO: check for external plugins
-
-        sys.modules[module_info.name] = module
-        assert spec.loader is not None
-        spec.loader.exec_module(module)
+    load_modules(search_directories, verbose=verbose)
 
     # collect plugins as abstract class subclasses
     plugins = {}

@@ -17,6 +17,7 @@ class CheckerStructureConfig(CustomBaseModel):
     # Note: use Optional/Union[...] instead of ... | None as pydantic does not support | in older python versions
     ignore_patterns: Optional[list[str]] = None
     private_patterns: Optional[list[str]] = None
+    private_resources_dir: Optional[str] = None
     public_patterns: Optional[list[str]] = None
     # TODO: add check "**" is not allowed
 
