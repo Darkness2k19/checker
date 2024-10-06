@@ -49,6 +49,7 @@ class Tester:
         course: Course,
         checker_config: CheckerConfig,
         *,
+        tmp_dir: Path,
         verbose: bool = False,
         dry_run: bool = False,
     ):
@@ -67,7 +68,7 @@ class Tester:
         self.structure_config = checker_config.structure
         self.default_params = checker_config.default_parameters
 
-        self.plugins = load_plugins(self.testing_config.search_plugins, verbose=verbose)
+        self.plugins = load_plugins([f"{tmp_dir}/tools/plugins"] + self.testing_config.search_plugins, verbose=verbose)
 
         self.global_pipeline = PipelineRunner(self.testing_config.global_pipeline, self.plugins, verbose=verbose)
         self.task_pipeline = PipelineRunner(self.testing_config.tasks_pipeline, self.plugins, verbose=verbose)
