@@ -174,6 +174,15 @@ def check(
     checker_config = CheckerConfig.from_yaml(course_config_path)
     manytask_config = ManytaskConfig.from_yaml(manytask_config_path)
 
+    if checker_config.structure.private_resources_dir:
+        checker_config.structure.private_patterns = [
+            checker_config.structure.private_resources_dir
+        ] + (
+            checker_config.structure.private_patterns
+            if checker_config.structure.private_patterns
+            else []
+        )
+    
     # read filesystem, check existing tasks
     course = Course(manytask_config, root, reference_root)
 
@@ -358,6 +367,15 @@ def export(
     checker_config = CheckerConfig.from_yaml(course_config_path)
     manytask_config = ManytaskConfig.from_yaml(manytask_config_path)
 
+    if checker_config.structure.private_resources_dir:
+        checker_config.structure.private_patterns = [
+            checker_config.structure.private_resources_dir
+        ] + (
+            checker_config.structure.private_patterns
+            if checker_config.structure.private_patterns
+            else []
+        )
+
     # read filesystem, check existing tasks
     course = Course(manytask_config, reference_root)
 
@@ -402,6 +420,15 @@ def export_private(
     # load configs
     checker_config = CheckerConfig.from_yaml(course_config_path)
     manytask_config = ManytaskConfig.from_yaml(manytask_config_path)
+
+    if checker_config.structure.private_resources_dir:
+        checker_config.structure.private_patterns = [
+            checker_config.structure.private_resources_dir
+        ] + (
+            checker_config.structure.private_patterns
+            if checker_config.structure.private_patterns
+            else []
+        )
 
     # read filesystem, check existing tasks
     course = Course(manytask_config, reference_root)
