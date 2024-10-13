@@ -54,6 +54,15 @@ def validate(
     course_config_path = root / CHECKER_CONFIG
     manytask_config_path = root / MANYTASK_CONFIG
 
+    if checker_config.structure.private_resources_dir:
+        checker_config.structure.private_patterns = [
+            checker_config.structure.private_resources_dir
+        ] + (
+            checker_config.structure.private_patterns
+            if checker_config.structure.private_patterns
+            else []
+        )
+
     print_info("Validating configuration files...")
     try:
         checker_config = CheckerConfig.from_yaml(course_config_path)
