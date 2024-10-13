@@ -98,6 +98,7 @@ def validate(
         print_info(e)
         exit(1)
     print_info("Ok", color="green")
+    exporter.export_for_testing(exporter.temporary_dir)
 
     print_info("Validating tester...")
     try:
