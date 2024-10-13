@@ -92,7 +92,7 @@ def validate(
 
     print_info("Validating tester...")
     try:
-        tester = Tester(course, checker_config, tmp_dir=exporter.temporary_dir, verbose=verbose, dry_run=dry_run)
+        tester = Tester(course, checker_config, tmp_dir=exporter.temporary_dir, verbose=verbose)
         tester.validate()
     except CheckerValidationError as e:
         print_info("Tester Validation Failed", color="red")
